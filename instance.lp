@@ -1,9 +1,18 @@
-#const factory_card=5
-#const warehouse_card=4
-#const resource_card=8
-#const product_card=4
+% factory(x).
+% warehouse(x).
+% resource(x).
+% product(x).
+% truck(x).
 
-factory(1..factory_card).
-warehouse(1..warehouse_card).
-resource(1..resource_card).
-product(1..product_card).
+% cost(factory, warehouse).
+% cost(factory, factory).
+% cost(warehouse, warehouse).
+
+% consumes(factory, resource, quantity).
+% produces(factory, resource, quantity).
+
+% delivery(from, to, truck, resource, quantity).
+% delivery(from, to, truck, product, quantity).
+
+% supply(warehouse, resource, quantity).
+% demand(warehouse, product, quantity).
