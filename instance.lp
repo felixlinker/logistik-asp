@@ -1,18 +1,84 @@
-% factory(x).
-% warehouse(x).
-% resource(x).
-% product(x).
-% truck(x).
-
-% cost(factory, warehouse).
-% cost(factory, factory).
-% cost(warehouse, warehouse).
-
-% consumes(factory, resource, quantity).
-% produces(factory, resource, quantity).
-
-% delivery(from, to, truck, resource, quantity).
-% delivery(from, to, truck, product, quantity).
-
-% supply(warehouse, resource, quantity).
-% demand(warehouse, product, quantity).
+factory(1).
+factory(2).
+good(6).
+good(7).
+good(1).
+good(2).
+good(3).
+good(4).
+good(5).
+place(1).
+place(2).
+place(3).
+place(4).
+place(5).
+product(6).
+product(7).
+resource(1).
+resource(2).
+resource(3).
+resource(4).
+resource(5).
+warehouse(3).
+warehouse(4).
+warehouse(5).
+produces(1,6,1).
+produces(2,7,1).
+demand(3,6,0).
+demand(4,6,4).
+demand(5,6,1).
+demand(3,7,5).
+demand(4,7,0).
+demand(5,7,5).
+consumes(2,1,15).
+consumes(1,1,18).
+consumes(2,2,18).
+consumes(1,2,19).
+consumes(1,3,4).
+consumes(2,3,6).
+consumes(1,4,18).
+consumes(2,4,19).
+consumes(1,5,2).
+consumes(2,5,16).
+supply(3,1,0,83).
+supply(3,2,0,62).
+supply(3,3,0,7).
+supply(3,4,0,4).
+supply(3,5,0,9).
+supply(4,1,0,76).
+supply(4,2,0,100).
+supply(4,3,0,2).
+supply(4,4,0,41).
+supply(4,5,0,68).
+supply(5,1,0,6).
+supply(5,2,0,23).
+supply(5,3,0,41).
+supply(5,4,0,140).
+supply(5,5,0,13).
+produces(2,6,0).
+produces(1,7,0).
+cost(1,1,0).
+cost(2,1,9).
+cost(3,1,10).
+cost(4,1,5).
+cost(5,1,2).
+cost(1,2,9).
+cost(2,2,0).
+cost(3,2,11).
+cost(4,2,4).
+cost(5,2,8).
+cost(1,3,10).
+cost(2,3,11).
+cost(3,3,0).
+cost(4,3,9).
+cost(5,3,8).
+cost(1,4,5).
+cost(2,4,4).
+cost(3,4,9).
+cost(4,4,0).
+cost(5,4,4).
+cost(1,5,2).
+cost(2,5,8).
+cost(3,5,8).
+cost(4,5,4).
+cost(5,5,0).
