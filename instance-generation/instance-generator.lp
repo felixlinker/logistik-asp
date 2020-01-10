@@ -103,3 +103,15 @@ demand_opt(Q) :- demand_opt(Q + 1), Q > 0.
 1 <= #sum { Q : taut : demand(W, _, Q) } :- warehouse(W).
 % Demand per resource matches production
 PR = #sum { Q : taut : demand(_, P, Q) } :- production(P, PR).
+
+%%% Additional restrictions %%%
+
+#const truck_capacity=20.
+
+#const min_vol=1.
+#const max_vol=4.
+vol_opt(min_vol..max_vol).
+
+% vol(good, value).
+1 { vol(G, V) : vol_opt(V) } 1 :- good(G).
+#show vol/2
