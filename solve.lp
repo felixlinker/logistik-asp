@@ -27,7 +27,7 @@ truck_info(T, G, 0, F, 1) :- truck(T), good(G), factory(F).
 :- truck_info(T, G, Q, P, S), drives(T, P, S).
 
 % clean schedule: if truck is used, drive in step 1 already
-:- drive(T, P, S), not drive(T, P', 1).
+:- drive(T, P, S), not drive(T, P', 1), place(P').
 % clean schedule: need time to load and unload, see below (distance between S and S' should be at least 3)
 :- drive(T, P, S), drive(T, P', S'), (S-S')*(S'-S)>-6.
 % clean schedule: additional predicate after(T, S, S') to help ensure that we drive every third step
@@ -44,7 +44,7 @@ truck_info(T, G, Q, P, S+1) :- truck_info(T, G, Q, P', S), drives(T, P, S).
 % do not unload too much
 :- unload(T, G, Q, P, S), truck_info(T, G, Q', P, S), Q > Q'.
 % after unloading, update truck info
-truck_info(T, G, Q', P, S+2) :- unload(T, G, Q, P, S+1).
+truck_info(T, G, Q', P, S+2) :- unload(T, G, Q, P, S+1), capacity_opt(Q').
 
 % predicate load(truck, good, quantity, place, step).
 1 { load(T, G, Q, P, S+1) : capacity_opt(Q) } 1 :- unload(T, G, Q, P, S).
