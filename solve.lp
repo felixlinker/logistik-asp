@@ -1,16 +1,31 @@
+#const min_vol=1.
+#const max_vol=1.
+vol_opt(min_vol..max_vol).
+
+% vol(good, value).
+1 { vol(G, V) : vol_opt(V) } 3 :- good(G).
+
+truck(1..6).
 
 #const truck_capacity=20.
-capacity_opt(0..truck_info).
+capacity_opt(0..truck_capacity).
 
-max_steps=15.
-steps(1..max_steps).
+#const max_steps=15.
+step(1..max_steps).
 
 % predicate truck_info(truck, good, quantity, place, step).
 
-% Trucks start at some random factory
-1 { truck_info(T, G, 0, F, 1) } 1 :- truck(T), good(G), factory(F).
-% ... and must end at the same factory
-:- truck_info(T, G, 0, F, 1), truck_info(T, G, 0, F', max_steps), F != F'.
+% trucks are empty each morning and are parked at first factory (=place nr. 1).
+truck_info(T, G, 0, 1, 1) :- truck(T), good(G).
+
+% % Trucks start at some random factory
+% 1 { truck_info(T, G, 0, F, 1) } 1 :- truck(T), good(G), factory(F).
+% % additional predicates last_drivestep(T, S) and notlast_drivestep(T, S) for obtaining truck_info at last step (!=max_steps)
+% notlast_drivestep(T, S) :- step(S), step(S'), after(T, S, S').
+
+% last_drivestep(T, S) :- not notlast_drivestep(T, S), drive(T, P, S).
+% % ... and must end at the same factory
+% :- truck_info(T, G, 0, F, 1), truck_info(T, G, 0, F', S+2), last_drivestep(T, S), F != F'.
 
 % capacity constraint for trucks
 :- truck_capacity < #sum { Q*V : vol(G, V), truck_info(T, G, Q, P, S) }, truck(T), place(P), step(S).
@@ -24,7 +39,7 @@ steps(1..max_steps).
 % predicate drive(truck, to, step) (************hilfe garantiert nicht richtig geraten)
 { drive(T, P, S) : place(P) } 1 :- truck(T), step(S).
 % don't drive around in circles; otherwise useless extensions since cost=0
-:- truck_info(T, G, Q, P, S), drives(T, P, S).
+:- truck_info(T, G, Q, P, S), drive(T, P, S).
 
 % clean schedule: if truck is used, drive in step 1 already
 :- drive(T, P, S), not drive(T, P', 1), place(P').
@@ -36,7 +51,7 @@ after(T, S, S') :- drive(T, P, S), drive(T, P', S'), S<S'.
 :- drive(T, P, S), after(T, S, S'), not drive(T, P, S+3).
 
 % after driving, truck arrives
-truck_info(T, G, Q, P, S+1) :- truck_info(T, G, Q, P', S), drives(T, P, S).
+truck_info(T, G, Q, P, S+1) :- truck_info(T, G, Q, P', S), drive(T, P, S).
 
 % predicate unload(truck, good, quantity, place, step).
 % after arriving, truck unloads
