@@ -50,8 +50,8 @@ truck_info(T, G, Q', P, S+2) :- unload(T, G, Q, P, S+1), capacity_opt(Q').
 1 { load(T, G, Q, P, S+1) : capacity_opt(Q) } 1 :- unload(T, G, Q, P, S).
 % cannot load too much since capacity constrained above
 
-% total expenses E from all the driving(*************wie schreib ich die zu minimierende variable E auf?)
-:- E != #sum { C : cost(X, Y, C), truck_info(T, 1, Q, X, S), drive(T, Y, S), truck(T), capacity_opt(Q), place(X), place(Y), step(S)}
+% total expenses from all the driving
+#minimize { C : cost(X, Y, C), truck_info(T, 1, Q, X, S), drive(T, Y, S) }.
 
 % sum of transported goods equals demand and consumption
 % weekly nachschub und waren abtransport
