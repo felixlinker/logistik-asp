@@ -7,8 +7,10 @@ steps(1..max_steps).
 
 % predicate truck_info(truck, good, quantity, place, step).
 
-% trucks are empty each morning and are parked at first warehouse (=place nr. factory_num+1).
-truck_info(T, G, 0, factory_num + 1, 1) :- truck(T), good(G).
+% Trucks start at some random factory
+truck_info(T, G, 0, F, 1) :- truck(T), good(G), factory(F).
+% ... and must end at the same factory
+:- truck_info(T, G, 0, F, 1), truck_info(T, G, 0, F', max_steps), F != F'.
 
 % capacity constraint for trucks
 :- truck_capacity < #sum { Q*V : capacity_opt(Q) good(G), vol(G, V), truck_info(T, G, Q, P, S) } , truck(T), place(P), step(S).
