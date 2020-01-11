@@ -19,10 +19,17 @@ truck_info(T, G, 0, factory_num + 1, 1) :- truck(T), good(G).
 { drive(T, P, S) : place(P) } 1 :- truck(T), step(S).
 % don't drive around in circles; otherwise useless extensions since cost=0
 :- truck_info(T, G, Q, P, S), drives(T, P, S), truck(T), good(G), supply_opt(Q), place(P), step(S).
-% need time to load and unload, see below
-:- drive(T, P, S), drive(T, P', S'), S<S'+2, truck(T), place(P), place(P'), step(S), step(S').
 
-% after driving, truck arrives.
+% clean schedule: if truck is used, drive in step 1 already
+:- drive(T, P, S), not drive(T, P', 1).
+% clean schedule: need time to load and unload, see below (distance between S and S' should be at least 3)
+:- drive(T, P, S), drive(T, P', S'), (S-S')*(S'-S)>-6, truck(T), place(P), place(P'), step(S), step(S').
+% clean schedule: additional predicate after(T, S, S') to help ensure that we drive every third step
+after(T, S, S') :- drive(T, P, S), drive(T, P', S'), S<S'.
+% clean schedule: if we keep driving, we must drive after precisely 3 steps
+:- drive(T, P, S), after(T, S, S'), not drive(T, P, S+3).
+
+% after driving, truck arrives
 truck_info(T, G, Q, P, S+1) :- truck_info(T, G, Q, P', S), drives(T, P, S), truck(T), good(G), supply_opt(Q), place(P), place(P'), step(S).
 
 % predicate unload(truck, good, quantity, place, step).
@@ -40,4 +47,5 @@ truck_info(T, G, Q', P, S+2) :- unload(T, G, Q, P, S+1).
 % total expenses E from all the driving(*************wie schreib ich die zu minimierende variable E auf?)
 :- E != #sum { C : cost(X, Y, C), truck_info(T, 1, Q, X, S), drive(T, Y, S), truck(T), supply_opt(Q), place(X), place(Y), step(S)}
 
+% sum of transported goods equals demand and consumption
 % weekly nachschub und waren abtransport
