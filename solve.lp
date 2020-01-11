@@ -1,3 +1,6 @@
+
+#const truck_capacity=20.
+
 max_steps=15.
 steps(1..max_steps).
 

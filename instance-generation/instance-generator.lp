@@ -106,8 +106,6 @@ PR = #sum { Q : taut : demand(_, P, Q) } :- production(P, PR).
 
 %%% Additional restrictions %%%
 
-#const truck_capacity=20.
-
 #const min_vol=1.
 #const max_vol=4.
 vol_opt(min_vol..max_vol).
