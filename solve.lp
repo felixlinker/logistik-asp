@@ -8,7 +8,7 @@ steps(1..max_steps).
 % predicate truck_info(truck, good, quantity, place, step).
 
 % Trucks start at some random factory
-truck_info(T, G, 0, F, 1) :- truck(T), good(G), factory(F).
+1 { truck_info(T, G, 0, F, 1) } 1 :- truck(T), good(G), factory(F).
 % ... and must end at the same factory
 :- truck_info(T, G, 0, F, 1), truck_info(T, G, 0, F', max_steps), F != F'.
 
