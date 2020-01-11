@@ -1,9 +1,9 @@
 #const min_vol=1.
-#const max_vol=1.
+#const max_vol=3.
 vol_opt(min_vol..max_vol).
 
 % vol(good, value).
-1 { vol(G, V) : vol_opt(V) } 3 :- good(G).
+1 { vol(G, V) : vol_opt(V) } 1 :- good(G).
 
 truck(1..6).
 
