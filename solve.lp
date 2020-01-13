@@ -30,7 +30,7 @@ truck_info(T, G, 0, 1, 1) :- truck(T), good(G).
 % quantity of certain good in trucks at each step well-defined
 :- truck_info(T, G, Q, P, S), truck_info(T, G, Q', P', S), Q != Q'.
 
-% predicate drive(truck, to, step) (************hilfe garantiert nicht richtig geraten)
+% predicate drive(truck, to, step)
 { drive(T, P, S) : place(P) } 1 :- truck(T), step(S).
 % don't drive around in circles; otherwise useless extensions since cost=0
 :- truck_info(T, G, Q, P, S), drive(T, P, S).
