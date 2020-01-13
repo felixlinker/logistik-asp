@@ -1,4 +1,5 @@
-truck(1..6).
+#const trucks=6.
+truck(1..trucks).
 
 #const truck_capacity=20.
 capacity_opt(0..truck_capacity).
