@@ -53,9 +53,9 @@ consumes_opt(0).
 #show consumes/3.
 
 % Every factory consumes something
-1 <= #sum { Q : taut : consumes(F, _, Q) } :- factory(F).
+1 <= #sum { Q,R : taut : consumes(F, R, Q) } :- factory(F).
 % Every resource is consumed
-1 <= #sum { Q : taut : consumes(_, R, Q) } :- resource(R).
+1 <= #sum { Q,F : taut : consumes(F, R, Q) } :- resource(R).
 
 #const min_produces=1.
 #const max_produces=20.
@@ -67,12 +67,12 @@ produces_opt(0).
 #show produces/3.
 
 % Every factory produces something
-1 <= #sum { Q : taut : produces(F, _, Q) } :- factory(F).
+1 <= #sum { Q,P : taut : produces(F, P, Q) } :- factory(F).
 % Every product is produced
-1 <= #sum { Q : taut : produces(_, P, Q) } :- product(P).
+1 <= #sum { Q,F : taut : produces(F, P, Q) } :- product(P).
 
 %%% Calculate supply needed per resource %%%
-supply_needed(R, days * Q_ALL) :- resource(R), Q_ALL = #sum { Q : consumes(_, R, Q) }.
+supply_needed(R, days * Q_ALL) :- resource(R), Q_ALL = #sum { Q,F : consumes(F, R, Q) }.
 supply_opt(0).
 supply_opt(Q) :- Q = #max { Q' : supply_needed(_, Q') }.
 supply_opt(Q) :- supply_opt(Q + 1), Q > 0.
@@ -82,12 +82,12 @@ supply_opt(Q) :- supply_opt(Q + 1), Q > 0.
 #show supply/4.
 
 % Every warehouse supplies something
-1 <= #sum { Q : taut : supply(W, _, _, Q) } :- warehouse(W).
+1 <= #sum { Q,R : taut : supply(W, R, _, Q) } :- warehouse(W).
 % Supply per resource matches consumption
-S = #sum { Q : taut : supply(_, R, _, Q) } :- supply_needed(R, S).
+S = #sum { Q,W : taut : supply(W, R, _, Q) } :- supply_needed(R, S).
 
 %%% Calculate demand per resource %%%
-production(P, days * Q_ALL) :- product(P), Q_ALL = #sum { Q : produces(_, P, Q) }.
+production(P, days * Q_ALL) :- product(P), Q_ALL = #sum { Q,F : produces(F, P, Q) }.
 demand_opt(0).
 demand_opt(Q) :- Q = #max { Q' : production(_, Q') }.
 demand_opt(Q) :- demand_opt(Q + 1), Q > 0.
@@ -97,9 +97,9 @@ demand_opt(Q) :- demand_opt(Q + 1), Q > 0.
 #show demand/3.
 
 % Every warehouse sells something
-1 <= #sum { Q : taut : demand(W, _, Q) } :- warehouse(W).
+1 <= #sum { Q,P : taut : demand(W, P, Q) } :- warehouse(W).
 % Demand per resource matches production
-PR = #sum { Q : taut : demand(_, P, Q) } :- production(P, PR).
+PR = #sum { Q,W : taut : demand(W, P, Q) } :- production(P, PR).
 
 %%% Additional changes %%%
 #const min_vol=1.
