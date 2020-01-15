@@ -74,9 +74,9 @@ truck_info(T, G, Q'+Q, P, S+1, D) :- load(T, G, Q, P, S, D), truck_info(T, G, Q'
 % pick up whatever resources warehouses offer
 :- Q != #sum{ Q',T,S,D: load(T, G, Q', P, S, D) }, supply(P, G, 0, Q).%no need to multiply sum with days!!
 % pick up whatever products factories make
-:- Q != #sum{ Q',T,S,D: load(T, G, Q', P, S, D) }, produces(P, G, Q), day(D).
+:- Q != #sum{ Q',T,S: load(T, G, Q', P, S, D) }, produces(P, G, Q), day(D).
 % drop off whatever resources factories need
-:- Q != #sum{ Q',T,S,D: unload(T, G, Q', P, S, D) }, consumes(P, G, Q), day(D).
+:- Q != #sum{ Q',T,S: unload(T, G, Q', P, S, D) }, consumes(P, G, Q), day(D).
 
 % do not load what you should deliver---additional predicates needed!:
 :- load(T, G, Q, P, S, D), warehouse(P), product(G), Q>0.
