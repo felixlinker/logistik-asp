@@ -14,10 +14,10 @@ day(1..days).
 
 % trucks are empty at the beginning of the week and are parked at first factory (=place nr. 1).
 truck_loaded(T, G, 0, 1, D) :- truck(T), good(G), day(D).
-truck_at(T, 1, 1, D) :- truck(T), day(D).
+1 { truck_at(T, W, 1, D) : warehouse(W) } 1 :- truck(T), day(D).
 
-% ... and must end at the same factory
-:- truck_at(T, P, S, D), not drive(T, _, S, D), P != 1.
+% ... and must end at the same warehouse where it started
+:- truck_at(T, P_start, 1, D), truck_at(T, P_end, S, D), not drive(T, _, S, D), P_start != P_end.
 
 % capacity constraint for trucks
 :- truck_capacity < #sum { (Q+QL)*V : vol(G, V), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D) }, truck_at(T, P, S, D).
