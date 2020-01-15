@@ -51,38 +51,38 @@ drives_3_steps_later(T, S, D) :- drive(T, P, S, D), drive(T, P', S+3, D).
 % after driving, truck arrives
 truck_info(T, G, Q, P, S+1, D) :- truck_info(T, G, Q, P', S, D), drive(T, P, S, D).
 
-% predicate unload(truck, good, quantity, place, step, day).
+% predicate unload(truck, good, quantity, step, day).
 % after arriving, truck unloads
-1 { unload(T, G, Q, P, S+1, D) : capacity_opt(Q) } 1 :- good(G), drive(T, P, S, D).
+1 { unload(T, G, Q, S+1, D) : capacity_opt(Q) } 1 :- good(G), drive(T, P, S, D).
 % do not unload too much
-:- unload(T, G, Q, P, S, D), truck_info(T, G, Q', P, S, D), Q > Q'.
+:- unload(T, G, Q, S, D), truck_info(T, G, Q', P, S, D), Q > Q'.
 % after unloading, update truck info
-truck_info(T, G, Q'-Q, P, S+1, D) :- unload(T, G, Q, P, S, D), truck_info(T, G, Q', P, S, D).
+truck_info(T, G, Q'-Q, P, S+1, D) :- unload(T, G, Q, S, D), truck_info(T, G, Q', P, S, D).
 
-% predicate load(truck, good, quantity, place, step).
-1 { load(T, G, Q, P, S+1, D) : capacity_opt(Q) } 1 :- unload(T, G, Q', P, S, D).
+% predicate load(truck, good, quantity, step).
+1 { load(T, G, Q, S+1, D) : capacity_opt(Q) } 1 :- unload(T, G, Q', S, D).
 % cannot load too much since capacity constrained above
 % after loading, update truck info
-truck_info(T, G, Q'+Q, P, S+1, D) :- load(T, G, Q, P, S, D), truck_info(T, G, Q', P, S, D), step(S+1).
+truck_info(T, G, Q'+Q, P, S+1, D) :- load(T, G, Q, S, D), truck_info(T, G, Q', P, S, D), step(S+1).
 
 % total expenses from all the driving
 %#minimize { C : cost(X, Y, C), truck_info(T, 1, Q, X, S), drive(T, Y, S) }.
 
 % transport the correct amount
 % drop off whatever products warehouses want
-:- Q != #sum{ Q',T,S,D: unload(T, G, Q', P, S, D) }, demand(P, G, Q).%no need to multiply sum with days!!
+:- Q != #sum{ Q',T,S,D: unload(T, G, Q', S, D), truck_info(T, G, Q'', P, S, D) }, demand(P, G, Q).%no need to multiply sum with days!!
 % pick up whatever resources warehouses offer
-:- Q != #sum{ Q',T,S,D: load(T, G, Q', P, S, D) }, supply(P, G, 0, Q).%no need to multiply sum with days!!
+:- Q != #sum{ Q',T,S,D: load(T, G, Q', S, D), truck_info(T, G, Q'', P, S, D) }, supply(P, G, 0, Q).%no need to multiply sum with days!!
 % pick up whatever products factories make
-:- Q != #sum{ Q',T,S: load(T, G, Q', P, S, D) }, produces(P, G, Q), day(D).
+:- Q != #sum{ Q',T,S: load(T, G, Q', S, D), truck_info(T, G, Q'', P, S, D) }, produces(P, G, Q), day(D).
 % drop off whatever resources factories need
-:- Q != #sum{ Q',T,S: unload(T, G, Q', P, S, D) }, consumes(P, G, Q), day(D).
+:- Q != #sum{ Q',T,S: unload(T, G, Q', S, D), truck_info(T, G, Q'', P, S, D) }, consumes(P, G, Q), day(D).
 
 % do not load what you should deliver---additional predicates needed!:
-:- load(T, G, Q, P, S, D), warehouse(P), product(G), Q>0.
-:- load(T, G, Q, P, S, D), factory(P), resource(G), Q>0.
+:- load(T, G, Q, S, D), truck_info(T, G, Q', P, S, D), warehouse(P), product(G), Q>0.
+:- load(T, G, Q, S, D), truck_info(T, G, Q', P, S, D), factory(P), resource(G), Q>0.
 % do not drop what you should pick up:
-:- unload(T, G, Q, P, S, D), factory(P), product(G), Q>0.
-:- unload(T, G, Q, P, S, D), warehouse(P), resource(G), Q>0.
+:- unload(T, G, Q, S, D), truck_info(T, G, Q', P, S, D), factory(P), product(G), Q>0.
+:- unload(T, G, Q, S, D), truck_info(T, G, Q', P, S, D), warehouse(P), resource(G), Q>0.
 
 % weekly nachschub und waren abtransport
