@@ -29,6 +29,7 @@ truck_at(T, 1, 1, D) :- truck(T), day(D).
 :- truck_loaded(T, G, Q, S, D), truck_loaded(T, G, Q', S, D), Q != Q'.
 
 % predicate drive(truck, to, step, day).
+#show drive/4.
 % Drive but don't drive around in circles
 { drive(T, P', S, D) : place(P'), P' != P } 1 :- truck_at(T, P, S, D), S <= max_steps.
 
@@ -39,12 +40,14 @@ truck_at(T, 1, 1, D) :- truck(T), day(D).
 truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 
 % predicate unload(truck, good, quantity, step, day).
+#show unload/5.
 % When arriving, truck unloads
 1 { unload(T, G, Q, S, D) : capacity_opt(Q) } 1 :- good(G), drive(T, P, S, D).
 % do not unload too much
 :- unload(T, G, QU, S, D), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D), QU > Q + QL.
 
 % predicate load(truck, good, quantity, step, day).
+#show load/5.
 % Before departing, truck loads
 1 { load(T, G, Q, S, D) : capacity_opt(Q) } 1 :- good(G), drive(T, P, S, D).
 % cannot load too much since capacity constrained above
