@@ -62,10 +62,12 @@ day(1..days).
 %%% INITIAL STATE %%%
 % Trucks are empty at the beginning of each day.
 truck_loaded(T, G, 0, 1, D) :- truck(T), good(G), day(D).
-% Trucks are parked at some warehouse at the beginning of each day...
-1 { truck_at(T, W, 1, D) : warehouse(W) } 1 :- truck(T), day(D).
+% Trucks are parked at some warehouse at the beginning of the week...
+1 { truck_at(T, W, 1, 1) : warehouse(W) } 1 :- truck(T).
 % ... and must end at the same warehouse where it started.
-:- truck_at(T, P_start, 1, D), truck_at(T, P_end, S, D), not drive(T, _, S, D), P_start != P_end.
+:- truck_at(T, P_start, 1, 1), truck_at(T, P_end, S, days), not drive(T, _, S, days), P_start != P_end.
+% Trucks start their day where they ended the last one.
+truck_at(T, P, 1, D + 1) :- truck_at(T, P, S, D), not drive(T, _, S, D), D < days.
 
 %%% DRIVING RULES %%%
 % Drive but don't drive around in circles
