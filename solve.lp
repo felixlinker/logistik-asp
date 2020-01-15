@@ -15,10 +15,8 @@ day(1..days).
 truck_loaded(T, G, 0, 1, D) :- truck(T), good(G), day(D).
 truck_at(T, 1, 1, D) :- truck(T), day(D).
 
-% additional predicates last_drivestep(T, S, D) and notlast_drivestep(T, S, D) for obtaining truck_info at last step (!=max_steps)
-last_drivestep(T, S, D) :- S = #max { S' : drive(T, P, S', D) }, truck(T), day(D).
 % ... and must end at the same factory
-:- truck_at(T, P, S, D), last_drivestep(T, S, D), P!=1.
+:- truck_at(T, P, S, D), not drive(T, _, S, D), P != 1.
 
 % capacity constraint for trucks
 :- truck_capacity < #sum { (Q+QL)*V : vol(G, V), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D) }, truck_at(T, P, S, D).
