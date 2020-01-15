@@ -10,6 +10,7 @@ capacity_opt(0..truck_capacity).
 day(1..days).
 
 % predicate truck_loaded(truck, good, quantity, step, day).
+% predicate truck_at(truck, place, step, day).
 
 % trucks are empty at the beginning of the week and are parked at first factory (=place nr. 1).
 truck_loaded(T, G, 0, 1, D) :- truck(T), good(G), day(D).
@@ -27,7 +28,7 @@ truck_at(T, 1, 1, D) :- truck(T), day(D).
 % quantity of certain good in trucks at each step well-defined
 :- truck_loaded(T, G, Q, S, D), truck_loaded(T, G, Q', S, D), Q != Q'.
 
-% predicate drive(truck, to, step)
+% predicate drive(truck, to, step, day).
 % Drive but don't drive around in circles
 { drive(T, P', S, D) : place(P'), P' != P } 1 :- truck_at(T, P, S, D), S <= max_steps.
 
@@ -43,7 +44,7 @@ truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 % do not unload too much
 :- unload(T, G, QU, S, D), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D), QU > Q + QL.
 
-% predicate load(truck, good, quantity, step).
+% predicate load(truck, good, quantity, step, day).
 % Before departing, truck loads
 1 { load(T, G, Q, S, D) : capacity_opt(Q) } 1 :- good(G), drive(T, P, S, D).
 % cannot load too much since capacity constrained above
