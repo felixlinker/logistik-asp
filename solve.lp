@@ -70,7 +70,7 @@ truck_info(T, G, Q'+Q, P, S+1, D) :- load(T, G, Q, P, S, D), truck_info(T, G, Q'
 
 % transport the correct amount
 % drop off whatever products warehouses want
-:- Q != #sum{ Q',T,S,D: unload(T, G, Q', P, S, D) }, demand(P, G, Q)).%no need to multiply sum with days!!
+:- Q != #sum{ Q',T,S,D: unload(T, G, Q', P, S, D) }, demand(P, G, Q).%no need to multiply sum with days!!
 % pick up whatever resources warehouses offer
 :- Q != #sum{ Q',T,S,D: load(T, G, Q', P, S, D) }, supply(P, G, 0, Q).%no need to multiply sum with days!!
 % pick up whatever products factories make
