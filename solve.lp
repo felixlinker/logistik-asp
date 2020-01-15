@@ -16,9 +16,8 @@ day(1..days).
 truck_loaded(T, G, 0, 1, D) :- truck(T), good(G), day(D).
 truck_at(T, 1, 1, D) :- truck(T), day(D).
 
-% additional predicates last_drivestep(T, S, D) and notlast_drivestep(T, S, D) for obtaining truck_loaded at last step (!=max_steps)
-notlast_drivestep(T, S, D) :- after(T, S, S', D).
-last_drivestep(T, S, D) :- not notlast_drivestep(T, S, D), drive(T, P, S, D).
+% additional predicates last_drivestep(T, S, D) and notlast_drivestep(T, S, D) for obtaining truck_info at last step (!=max_steps)
+last_drivestep(T, S, D) :- S = #max { S' : drive(T, P, S', D) }, truck(T), day(D).
 % ... and must end at the same factory
 :- truck_at(T, P, S+2, D), last_drivestep(T, S, D), P!=1.
 
@@ -39,9 +38,7 @@ last_drivestep(T, S, D) :- not notlast_drivestep(T, S, D), drive(T, P, S, D).
 % clean schedule: if truck is used, drive in step 1 already
 :- drive(T, P, S, D), not drive(T, _, 1, D).
 % clean schedule: if we keep driving, we must drive after precisely 3 steps
-drives_3_steps_later(T, S, D) :- drive(T, P, S, D), drive(T, P', S+3, D).
-:- drive(T, P, S, D), after(T, S, S', D), not drives_3_steps_later(T, S, D).
-%maybe instead:    :- after(T, S, S', D), not drives_3_steps_later(T, S, D).
+:- drive(T, P, S, D), drive(T, P', S', D), (S - S') \ 3 != 0.
 
 % after driving, truck arrives
 truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
