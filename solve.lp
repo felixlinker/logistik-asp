@@ -74,5 +74,3 @@ truck_loaded(T, G, Q+QL-QU, S+1, D) :- unload(T, G, QU, S, D), truck_loaded(T, G
 % do not drop what you should pick up:
 :- unload(T, G, Q, S, D), drive(T, P, S, D), factory(P), product(G), Q>0.
 :- unload(T, G, Q, S, D), drive(T, P, S, D), warehouse(P), resource(G), Q>0.
-
-% weekly nachschub und waren abtransport
