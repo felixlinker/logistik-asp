@@ -31,9 +31,8 @@ last_drivestep(T, S, D) :- S = #max { S' : drive(T, P, S', D) }, truck(T), day(D
 :- truck_loaded(T, G, Q, S, D), truck_loaded(T, G, Q', S, D), Q != Q'.
 
 % predicate drive(truck, to, step)
-{ drive(T, P, S, D) : place(P) } 1 :- truck(T), step(S), day(D).
-% don't drive around in circles; otherwise useless extensions since cost=0
-:- truck_at(T, P, S, D), drive(T, P, S, D).
+% Drive but don't drive around in circles
+{ drive(T, P', S, D) : place(P'), P' != P } 1 :- truck_at(T, P, S, D).
 
 % clean schedule: if truck is used, drive in step 1 already
 :- drive(T, P, S, D), not drive(T, _, 1, D).
