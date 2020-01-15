@@ -56,7 +56,7 @@ truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 truck_loaded(T, G, Q+QL-QU, S+1, D) :- unload(T, G, QU, S, D), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D).
 
 % total expenses from all the driving
-%#minimize { C : cost(X, Y, C), truck_loaded(T, 1, Q, X, S), drive(T, Y, S) }.
+#minimize { C,T,S,D,P,P' : cost(P, P', C), truck_at(T, P, S, D), drive(T, P', S, D) }.
 
 % transport the correct amount
 % drop off whatever products warehouses want
