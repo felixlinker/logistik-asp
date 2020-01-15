@@ -83,7 +83,7 @@ truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 % do not unload too much
 :- unload(T, G, QU, S, D), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D), QU > Q + QL.
 
-% do not drop more than is needed:
+% do not drop off more than is needed (in the course of one week):
 :- unload(T, G, Q, S, D), demand(P, G, Q'), Q'<Q, warehouse(P), drive(T, P, S, D).
 :- unload(T, G, Q, S, D), consumes(P, G, Q'), Q'*days<Q, factory(P), drive(T, P, S, D).
 % do not drop what you should pick up:
@@ -91,8 +91,8 @@ truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 :- unload(T, G, Q, S, D), warehouse(P), resource(G), Q>0, drive(T, P, S, D).
 % drop off whatever products warehouses want
 :- Q != #sum{ Q',T,S,D: unload(T, G, Q', S, D), drive(T, P, S, D) }, demand(P, G, Q).%no need to multiply sum with days!!
-% drop off whatever resources factories need
-:- Q != #sum{ Q',T,S: unload(T, G, Q', S, D), drive(T, P, S, D) }, consumes(P, G, Q), day(D).
+% each day, do not drop off less than the factories needed so far
+:- Q*D > #sum{ Q',T,S,D': unload(T, G, Q', S, D'), drive(T, P, S, D'), D'<=D }, consumes(P, G, Q), day(D).
 
 %%% LOADING RULES %%%
 % Before departing, truck loads
@@ -100,7 +100,7 @@ truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 % do not load too much
 :- truck_capacity < #sum { (Q+QL)*V : vol(G, V), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D) }, truck_at(T, P, S, D).
 
-% do not load more than is available:
+% do not load more than is available (each week):
 :- load(T, G, Q, S, D), supply(P, G, 0, Q'), Q'<Q, warehouse(P), truck_at(T, P, S, D).
 :- load(T, G, Q, S, D), produces(P, G, Q'), Q'*days<Q, factory(P), truck_at(T, P, S, D).
 % do not load what you should deliver:
@@ -108,8 +108,8 @@ truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 :- load(T, G, Q, S, D), factory(P), resource(G), Q>0, truck_at(T, P, S, D).
 % pick up whatever resources warehouses offer
 :- Q != #sum{ Q',T,S,D: load(T, G, Q', S, D), truck_at(T, P, S, D) }, supply(P, G, 0, Q).%no need to multiply sum with days!!
-% pick up whatever products factories make
-:- Q != #sum{ Q',T,S: load(T, G, Q', S, D), truck_at(T, P, S, D) }, produces(P, G, Q), day(D).
+% each day, do not pick up more than the factories have made so far
+:- Q*D < #sum{ Q',T,S,D': load(T, G, Q', S, D'), truck_at(T, P, S, D'), D'<=D }, produces(P, G, Q), day(D).
 
 % after (un)loading, update truck info
 truck_loaded(T, G, Q+QL-QU, S+1, D) :- unload(T, G, QU, S, D), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D).
