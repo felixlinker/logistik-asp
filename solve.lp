@@ -43,10 +43,6 @@ truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 #show unload/5.
 % When arriving, truck unloads
 1 { unload(T, G, Q, S, D) : capacity_opt(Q) } 1 :- good(G), drive(T, P, S, D).
-% Products can't be unloaded at factories and vice versa for resources at
-% warehouses
-unload(T, G, 0, S, D) :- drive(T, P, S, D), factory(P), product(G).
-unload(T, G, 0, S, D) :- drive(T, P, S, D), warehouse(P), resource(G).
 % do not unload too much
 :- unload(T, G, QU, S, D), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D), QU > Q + QL.
 
@@ -54,10 +50,6 @@ unload(T, G, 0, S, D) :- drive(T, P, S, D), warehouse(P), resource(G).
 #show load/5.
 % Before departing, truck loads
 1 { load(T, G, Q, S, D) : capacity_opt(Q) } 1 :- good(G), drive(T, P, S, D).
-% Resources can't be loaded at factories and vice versa for products at
-% warehouses
-load(T, G, 0, S, D) :- drive(T, P, S, D), truck_at(T, P_at, S, D), factory(P_at), resource(G).
-load(T, G, 0, S, D) :- drive(T, P, S, D), truck_at(T, P_at, S, D), warehouse(P_at), product(G).
 % cannot load too much since capacity constrained above
 
 % after (un)loading, update truck info
@@ -79,6 +71,12 @@ truck_loaded(T, G, Q+QL-QU, S+1, D) :- unload(T, G, QU, S, D), truck_loaded(T, G
 % do not load more than is available:
 :- load(T, G, Q, P, S, D), supply(P, G, 0, Q'), Q'<Q, warehouse(P).
 :- load(T, G, Q, P, S, D), produces(P, G, Q'), Q'*days<Q, factory(P).
+% do not load what you should deliver:
+:- load(T, G, Q, P, S, D), warehouse(P), product(G), Q>0.
+:- load(T, G, Q, P, S, D), factory(P), resource(G), Q>0.
 % do not drop more than is needed:
 :- unload(T, G, Q, P, S, D), demand(P, G, Q'), Q'<Q, warehouse(P).
 :- unload(T, G, Q, P, S, D), consumes(P, G, Q'), Q'*days<Q, factory(P).
+% do not drop what you should pick up:
+:- unload(T, G, Q, P, S, D), factory(P), product(G), Q>0.
+:- unload(T, G, Q, P, S, D), warehouse(P), resource(G), Q>0.
