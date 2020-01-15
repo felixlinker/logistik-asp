@@ -7,6 +7,9 @@ capacity_opt(0..truck_capacity).
 #const max_steps=15.
 step(1..max_steps).
 
+#const days=5.
+day(1..days).
+
 % predicate truck_info(truck, good, quantity, place, step, day).
 
 % trucks are empty each morning and are parked at first factory (=place nr. 1).
