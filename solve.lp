@@ -7,11 +7,11 @@ truck(1..trucks).
 capacity_opt(0..truck_capacity).
 % How many deliveries can a truck make at max per day?
 #const max_steps=15.
-% How many days does a week have?
-#const days=5.
-day(1..days).
-% How many time units does a day consist of?
-#const tu_per_day=8.
+
+%%% IMPORTANT %%%
+% It is assumed that the instance program defines the two constants days giving
+% the number of days a week has an tu_per_day giving the number of time units
+% a day has.
 
 %%% ALL PREDICATES %%%
 % predicate truck_loaded(T, G, Q, S, D).

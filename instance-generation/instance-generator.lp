@@ -2,6 +2,10 @@
 taut.
 
 #const days=5.
+day(1..days).
+#show day/1.
+
+#const tu_per_day=8.
 
 #const factory_num=2.
 #const warehouse_num=3.
@@ -25,8 +29,9 @@ good(X) :- product(X).
 #show good/1.
 
 #const min_cost=1.
-#const max_cost=12.
-cost_opt(min_cost..max_cost).
+#const max_cost_frac=2.
+:- max_cost_frac < 2.
+cost_opt(min_cost..tu_per_day/max_cost_frac).
 cost_opt(0).
 
 % cost(from, to, time).
