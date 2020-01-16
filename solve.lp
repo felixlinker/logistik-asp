@@ -61,6 +61,14 @@ capacity_opt(0..truck_capacity).
 % each of these steps. If you want to find out where a truck unloaded something,
 % you have to look at the place in drive.
 
+%%% HELPER PREDICATES %%%
+% Generalize produces/supply into offers
+offers(F, G) :- factory(F), produces(F, G, Q), Q > 0.
+offers(W, G) :- warehouse(W), supply(W, G, 0, Q), Q > 0.
+% Gernalize demand/consumes into needs
+needs(F, G) :- factory(F), consumes(F, G, Q), Q > 0.
+needs(W, G) :- warehouse(W), demand(W, G, Q), Q > 0.
+
 %%% INITIAL STATE %%%
 % Trucks are empty at the beginning of each day.
 truck_loaded(T, G, 0, 1, D) :- truck(T), good(G), day(D).
@@ -83,33 +91,27 @@ truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 
 %%% UNLOADING RULES $$$
 % When arriving, truck unloads
-1 { unload(T, G, Q, S, D) : capacity_opt(Q) } 1 :- good(G), drive(T, P, S, D).
+1 { unload(T, G, Q, S, D) : capacity_opt(Q) } 1 :- drive(T, P, S, D), needs(P, G).
 % do not unload too much
 :- unload(T, G, QU, S, D), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D), QU > Q + QL.
 
 % do not drop off more than is needed (in the course of one week):
 :- unload(T, G, Q, S, D), demand(P, G, Q'), Q'<Q, warehouse(P), drive(T, P, S, D).
 :- unload(T, G, Q, S, D), consumes(P, G, Q'), Q'*days<Q, factory(P), drive(T, P, S, D).
-% do not drop what you should pick up:
-:- unload(T, G, Q, S, D), factory(P), product(G), Q>0, drive(T, P, S, D).
-:- unload(T, G, Q, S, D), warehouse(P), resource(G), Q>0, drive(T, P, S, D).
 % drop off whatever products warehouses want
 :- Q != #sum{ Q',T,S,D: unload(T, G, Q', S, D), drive(T, P, S, D) }, demand(P, G, Q).%no need to multiply sum with days!!
 % each day, do not drop off less than the factories needed so far
 :- Q*D > #sum{ Q',T,S,D': unload(T, G, Q', S, D'), drive(T, P, S, D'), D'<=D }, consumes(P, G, Q), day(D).
 
 %%% LOADING RULES %%%
-% Before departing, truck loads
-1 { load(T, G, Q, S, D) : capacity_opt(Q) } 1 :- good(G), drive(T, P, S, D).
+% Before departing, truck loads. Only load what is offered.
+1 { load(T, G, Q, S, D) : capacity_opt(Q) } 1 :- truck_at(T, P, S, D), offers(P, G).
 % do not load too much
 :- truck_capacity < #sum { (Q+QL)*V : vol(G, V), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D) }, truck_at(T, P, S, D).
 
 % do not load more than is available (each week):
 :- load(T, G, Q, S, D), supply(P, G, 0, Q'), Q'<Q, warehouse(P), truck_at(T, P, S, D).
 :- load(T, G, Q, S, D), produces(P, G, Q'), Q'*days<Q, factory(P), truck_at(T, P, S, D).
-% do not load what you should deliver:
-:- load(T, G, Q, S, D), warehouse(P), product(G), Q>0, truck_at(T, P, S, D).
-:- load(T, G, Q, S, D), factory(P), resource(G), Q>0, truck_at(T, P, S, D).
 % pick up whatever resources warehouses offer
 :- Q != #sum{ Q',T,S,D: load(T, G, Q', S, D), truck_at(T, P, S, D) }, supply(P, G, 0, Q).%no need to multiply sum with days!!
 % each day, do not pick up more than the factories have made so far
