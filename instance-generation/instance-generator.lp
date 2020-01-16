@@ -82,14 +82,14 @@ supply_opt(0).
 supply_opt(Q) :- Q = #max { Q' : supply_needed(_, Q') }.
 supply_opt(Q) :- supply_opt(Q + 1), Q > 0.
 
-% supply(warehouse, resource, day, quantity).
-1 { supply(W, R, 0, Q) : supply_opt(Q) } 1 :- warehouse(W), resource(R).
+% supply(warehouse, resource, quantity).
+1 { supply(W, R, Q) : supply_opt(Q) } 1 :- warehouse(W), resource(R).
 #show supply/4.
 
 % Every warehouse supplies something
-1 <= #sum { Q,R : taut : supply(W, R, _, Q) } :- warehouse(W).
+1 <= #sum { Q,R : taut : supply(W, R, Q) } :- warehouse(W).
 % Supply per resource matches consumption
-S = #sum { Q,W : taut : supply(W, R, _, Q) } :- supply_needed(R, S).
+S = #sum { Q,W : taut : supply(W, R, Q) } :- supply_needed(R, S).
 
 %%% Calculate demand per resource %%%
 production(P, days * Q_ALL) :- product(P), Q_ALL = #sum { Q,F : produces(F, P, Q) }.

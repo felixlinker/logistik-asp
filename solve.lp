@@ -64,7 +64,7 @@ capacity_opt(0..truck_capacity).
 %%% HELPER PREDICATES %%%
 % Generalize produces/supply into offers
 offers(F, G) :- factory(F), produces(F, G, Q), Q > 0.
-offers(W, G) :- warehouse(W), supply(W, G, 0, Q), Q > 0.
+offers(W, G) :- warehouse(W), supply(W, G, Q), Q > 0.
 % Gernalize demand/consumes into needs
 needs(F, G) :- factory(F), consumes(F, G, Q), Q > 0.
 needs(W, G) :- warehouse(W), demand(W, G, Q), Q > 0.
@@ -110,10 +110,10 @@ truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 :- truck_capacity < #sum { (Q+QL)*V : vol(G, V), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D) }, truck_at(T, P, S, D).
 
 % do not load more than is available (each week):
-:- load(T, G, Q, S, D), supply(P, G, 0, Q'), Q'<Q, warehouse(P), truck_at(T, P, S, D).
+:- load(T, G, Q, S, D), supply(P, G, Q'), Q'<Q, warehouse(P), truck_at(T, P, S, D).
 :- load(T, G, Q, S, D), produces(P, G, Q'), Q'*days<Q, factory(P), truck_at(T, P, S, D).
 % pick up whatever resources warehouses offer
-:- Q != #sum{ Q',T,S,D: load(T, G, Q', S, D), truck_at(T, P, S, D) }, supply(P, G, 0, Q).%no need to multiply sum with days!!
+:- Q != #sum{ Q',T,S,D: load(T, G, Q', S, D), truck_at(T, P, S, D) }, supply(P, G, Q).%no need to multiply sum with days!!
 % each day, do not pick up more than the factories have made so far
 :- Q*D < #sum{ Q',T,S,D': load(T, G, Q', S, D'), truck_at(T, P, S, D'), D'<=D }, produces(P, G, Q), day(D).
 
