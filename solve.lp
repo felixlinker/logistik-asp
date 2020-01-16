@@ -10,6 +10,8 @@ capacity_opt(0..truck_capacity).
 % How many days does a week have?
 #const days=5.
 day(1..days).
+% How many time units does a day consist of?
+#const tu_per_day=8.
 
 %%% ALL PREDICATES %%%
 % predicate truck_loaded(T, G, Q, S, D).
@@ -76,6 +78,8 @@ truck_at(T, P, 1, D + 1) :- truck_at(T, P, S, D), not drive(T, _, S, D), D < day
 :- drive(T, P, S, D), not drive(T, _, 1, D).
 % after driving, truck arrives
 truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
+% A truck must not longer than a day is
+:- tu_per_day < #sum { C,S : truck_at(T, P, S, D), drive(T, P', S, D), cost(P, P', C) }, truck(T), day(D).
 
 %%% UNLOADING RULES $$$
 % When arriving, truck unloads
