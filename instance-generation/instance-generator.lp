@@ -17,9 +17,6 @@ product(resource_num + 1..resource_num + product_num).
 #show resource/1.
 #show product/1.
 
-#const truck_num=6.
-truck(1..truck_num).
-
 place(X) :- factory(X).
 place(X) :- warehouse(X).
 good(X) :- resource(X).
