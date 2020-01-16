@@ -49,7 +49,7 @@ cost_opt(0).
 :- cost(X, Z, C_XZ), cost(X, Y, C_XY), cost(Y, Z, C_YZ), C_XZ > C_XY + C_YZ.
 
 #const min_consumes=1.
-#const max_consumes=20.
+#const max_consumes=5.
 consumes_opt(min_consumes..max_consumes).
 consumes_opt(0).
 
@@ -63,7 +63,7 @@ consumes_opt(0).
 1 <= #sum { Q,F : taut : consumes(F, R, Q) } :- resource(R).
 
 #const min_produces=1.
-#const max_produces=20.
+#const max_produces=5.
 produces_opt(min_produces..max_produces).
 produces_opt(0).
 
@@ -114,5 +114,3 @@ vol_opt(min_vol..max_vol).
 % vol(good, value).
 1 { vol(G, V) : vol_opt(V) } 1 :- good(G).
 #show vol/2.
-
-

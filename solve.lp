@@ -3,7 +3,7 @@
 #const trucks=6.
 truck(1..trucks).
 % What is the capacity of each truck?
-#const truck_capacity=20.
+#const truck_capacity=5.
 capacity_opt(0..truck_capacity).
 % How many deliveries can a truck make at max per day?
 #const max_steps=15.
