@@ -6,7 +6,7 @@ truck(1..trucks).
 #const truck_capacity=5.
 capacity_opt(0..truck_capacity).
 % How many deliveries can a truck make at max per day?
-#const max_steps=15.
+#const max_steps=tu_per_day.
 
 %%% IMPORTANT %%%
 % It is assumed that the instance program defines the two constants days giving
