@@ -84,7 +84,7 @@ supply_opt(Q) :- supply_opt(Q + 1), Q > 0.
 
 % supply(warehouse, resource, quantity).
 1 { supply(W, R, Q) : supply_opt(Q) } 1 :- warehouse(W), resource(R).
-#show supply/4.
+#show supply/3.
 
 % Every warehouse supplies something
 1 <= #sum { Q,R : taut : supply(W, R, Q) } :- warehouse(W).
