@@ -1,16 +1,19 @@
 %%% INPUT %%%
-% How many trucks are available?
+% How many trucks are available? 
+%    ***fixed number of equal trucks (given in task)
 #const trucks=6.
 truck(1..trucks).
-% What is the capacity of each truck?
+% What is the capacity of each truck? 
+%    ***reasonable condition to avoid unrealistic solutions (own extension)
 #const truck_capacity=5.
 capacity_opt(0..truck_capacity).
-% How many deliveries can a truck make at max per day?
+% How many deliveries can a truck make at max per day? 
+%    ***reasonable condition to avoid unrealistic solutions (own extension)
 #const max_steps=tu_per_day.
 
 %%% IMPORTANT %%%
 % It is assumed that the instance program defines the two constants days giving
-% the number of days a week has an tu_per_day giving the number of time units
+% the number of days a week has and tu_per_day giving the number of time units
 % a day has.
 
 %%% ALL PREDICATES %%%
@@ -20,7 +23,7 @@ capacity_opt(0..truck_capacity).
 % has been loaded into the truck in step S.
 
 % predicate truck_at(T, P, S, D).
-% truck_at encodes the position P of the truck T after driving in step-1, i.e.
+% truck_at encodes the position P of the truck T after driving in step S-1, i.e.
 % at the beginning of step S at day D.
 
 % predicate drive(T, P, S, D).
@@ -48,7 +51,7 @@ capacity_opt(0..truck_capacity).
 % | ... truck drives back to warehouse W ...
 % * Truck unloads the products.
 %
-% This would sequence of actions would be implemented in two steps in this ASP.
+% This sequence of actions would be implemented in two steps in this ASP.
 % At each step, a truck may decide to drive somewhere. If it does, it has to
 % load all goods (may load nothing by loading an amount of zero) where it starts
 % (given by truck_at) and has to unload all goods where it ends (may unload
@@ -63,9 +66,11 @@ capacity_opt(0..truck_capacity).
 
 %%% HELPER PREDICATES %%%
 % Generalize produces/supply into offers
+%    ***weekly production and supply is predetermined in each instance (as given in task)
 offers(F, G) :- factory(F), produces(F, G, Q), Q > 0.
 offers(W, G) :- warehouse(W), supply(W, G, Q), Q > 0.
 % Gernalize demand/consumes into needs
+%    ***likewise for weekly resource consumption and sold product quantity 
 needs(F, G) :- factory(F), consumes(F, G, Q), Q > 0.
 needs(W, G) :- warehouse(W), demand(W, G, Q), Q > 0.
 
@@ -74,23 +79,27 @@ needs(W, G) :- warehouse(W), demand(W, G, Q), Q > 0.
 truck_loaded(T, G, 0, 1, D) :- truck(T), good(G), day(D).
 % Trucks are parked at some warehouse at the beginning of the week...
 1 { truck_at(T, W, 1, 1) : warehouse(W) } 1 :- truck(T).
-% ... and must end at the same warehouse where it started.
+% ... and must end at the same warehouse where they started.
 :- truck_at(T, P_start, 1, 1), truck_at(T, P_end, S, days), not drive(T, _, S, days), P_start != P_end.
 % Trucks start their day where they ended the last one.
 truck_at(T, P, 1, D + 1) :- truck_at(T, P, S, D), not drive(T, _, S, D), D < days.
 
 %%% DRIVING RULES %%%
 % Drive but don't drive around in circles
+%    ***avoids multiple equivalent solutions
 { drive(T, P', S, D) : place(P'), P' != P } 1 :- truck_at(T, P, S, D), S <= max_steps.
 % clean schedule: if truck is used, drive in step 1 already
+%    ***avoids multiple equivalent solutions
 :- drive(T, P, S, D), not drive(T, _, 1, D).
 % after driving, truck arrives
 truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
-% A truck must not longer than a day is
+% A truck must not drive longer than a day is
+%    ***reasonable condition to avoid unrealistic solutions (own extension)
 :- tu_per_day < #sum { C,S : truck_at(T, P, S, D), drive(T, P', S, D), cost(P, P', C) }, truck(T), day(D).
 
 %%% UNLOADING RULES $$$
-% When arriving, truck unloads
+%   ***all of them aim at satisfying constraints as given in task
+% When arriving, truck unloads. Only load what is needed.
 1 { unload(T, G, Q, S, D) : capacity_opt(Q) } 1 :- drive(T, P, S, D), needs(P, G).
 % do not unload too much
 :- unload(T, G, QU, S, D), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D), QU > Q + QL.
@@ -102,12 +111,15 @@ truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 :- Q != #sum{ Q',T,S,D: unload(T, G, Q', S, D), drive(T, P, S, D) }, demand(P, G, Q).%no need to multiply sum with days!!
 % each day, do not drop off less than the factories needed so far
 :- Q*D > #sum{ Q',T,S,D': unload(T, G, Q', S, D'), drive(T, P, S, D'), D'<=D }, consumes(P, G, Q), day(D).
+%   ***allow for the trucks to unload goods in advance in order to drive more efficiently (own extension)
 
 %%% LOADING RULES %%%
+%   ***all of them aim at satisfying constraints as given in task
 % Before departing, truck loads. Only load what is offered.
 1 { load(T, G, Q, S, D) : capacity_opt(Q) } 1 :- truck_at(T, P, S, D), offers(P, G).
 % do not load too much
 :- truck_capacity < #sum { (Q+QL)*V : vol(G, V), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D) }, truck_at(T, P, S, D).
+%   ***take into consideration how different goods take up different amount of space per unit (own extension)
 
 % do not load more than is available (each week):
 :- load(T, G, Q, S, D), supply(P, G, Q'), Q'<Q, warehouse(P), truck_at(T, P, S, D).
@@ -116,6 +128,7 @@ truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 :- Q != #sum{ Q',T,S,D: load(T, G, Q', S, D), truck_at(T, P, S, D) }, supply(P, G, Q).%no need to multiply sum with days!!
 % each day, do not pick up more than the factories have made so far
 :- Q*D < #sum{ Q',T,S,D': load(T, G, Q', S, D'), truck_at(T, P, S, D'), D'<=D }, produces(P, G, Q), day(D).
+%   ***allow for the trucks to load goods collectively later in order to drive more efficiently (own extension)
 
 % after (un)loading, update truck info
 truck_loaded(T, G, Q+QL-QU, S+1, D) :- unload(T, G, QU, S, D), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D).
