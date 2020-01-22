@@ -11,7 +11,7 @@ import qualified Data.Map.Strict               as Map
 import qualified Data.Set                      as Set
 
 globals :: [String]
-globals = ["edge [colorscheme=\"accent8\"];"]
+globals = ["edge [colorscheme=\"set19\"];"]
 
 toGraph :: FactProgram -> [String]
 toGraph p =
