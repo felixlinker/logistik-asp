@@ -9,7 +9,9 @@ module Parse
 
 import Text.ParserCombinators.ReadP
 import Data.Char
-import qualified Data.Map as Map
+import SetMap
+import qualified Data.Map.Strict as Map
+import qualified Data.Set as Set
 
 type Name = String
 type Value = Int
@@ -19,7 +21,7 @@ type Fact = (Name, [Value])
 
 data FactProgram = FactProgram
     { consts :: Map.Map Name Value
-    , facts :: Map.Map Name [[Value]]
+    , facts :: Map.Map Name (Set.Set [Value])
     }
 
 isVarChar :: Char -> Bool
@@ -66,7 +68,7 @@ assembleProgram = recurse $ FactProgram Map.empty Map.empty
         recurse (FactProgram cs fs) (Left (name, value):tail) =
             recurse (FactProgram (Map.insert name value cs) fs) tail
         recurse (FactProgram cs fs) (Right (name, value):tail) =
-            recurse (FactProgram cs (Map.adjust (value:) name fs)) tail
+            recurse (FactProgram cs (Map.alter (insertMaybe value) name fs)) tail
 
 programParser :: ReadS FactProgram
 programParser = readP_to_S (assembleProgram <$> prsProgram)
