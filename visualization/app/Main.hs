@@ -1,6 +1,9 @@
 module Main where
 
-import Lib
+import Graph
+import Parse
 
 main :: IO ()
-main = return ()
+main = do
+    program <- fst . head . programParser <$> getContents
+    mapM_ putStrLn $ toGraph program
