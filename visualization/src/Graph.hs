@@ -50,21 +50,22 @@ data Step = Step { day :: Int
                  , num :: Int } deriving (Eq, Ord)
 
 data Drives = Drives { dstep :: Step
-                     , to :: Int } deriving (Eq, Ord)
+                     , to :: Int
+                     , truck :: Int } deriving (Eq, Ord)
 
 toEdge :: Int -> Drives -> String
-toEdge from (Drives (Step d s) t) =
+toEdge from (Drives (Step d s) t tr) =
     let startNode = show $ Place from d
         endNode   = show $ Place t d
-    in  printf "%s -> %s [label=\"@%d\",color=%d];" startNode endNode s
+    in  printf "%s -> %s [label=\"@%d\",color=%d];" startNode endNode s tr
 
 fromList :: [Int] -> Drives
-fromList (to : step : day : _) = Drives (Step day step) to
+fromList (truck : to : step : day : _) = Drives (Step day step) to truck
 
 driveSchedules :: FactProgram -> Map.Map Int [Drives]
 driveSchedules program =
     Map.map Set.toAscList . foldr update Map.empty $ facts program Map.! "drive"
-    where update (tr : vals) = Map.alter (insertMaybe $ fromList vals) tr
+    where update (tr : vals) = Map.alter (insertMaybe $ fromList (tr : vals)) tr
 
 initPos :: [Int] -> Bool
 initPos (_ : _ : 1 : 1 : _) = True
