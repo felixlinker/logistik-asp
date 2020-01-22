@@ -19,10 +19,12 @@ toGraph p =
         drives = driveSchedules p
         starts = truckStarts p
     in
-        globals
+        ["digraph TruckSchedule {"]
+            ++ globals
             ++ ( Map.foldr (++) []
                $ Map.mapWithKey (\k -> toEdgeRec (Place (starts Map.! k) 1)) drives
                )
+            ++ ["}"]
   where
     toEdgeRec :: Place -> [Drives] -> [String]
     toEdgeRec _ []         = []
