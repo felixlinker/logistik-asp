@@ -10,12 +10,19 @@ import           Data.Map.Merge.Strict
 import qualified Data.Map.Strict               as Map
 import qualified Data.Set                      as Set
 
+globals :: [String]
+globals = ["edge [colorscheme=\"accent8\"];"]
 
 toGraph :: FactProgram -> [String]
 toGraph p =
-    let drives = driveSchedules p
+    let
+        drives = driveSchedules p
         starts = truckStarts p
-    in  Map.foldr (++) [] $ Map.mapWithKey (\k -> toEdgeRec 0) drives
+    in
+        globals
+            ++ ( Map.foldr (++) []
+               $ Map.mapWithKey (\k -> toEdgeRec 0) drives
+               )
   where
     toEdgeRec :: Int -> [Drives] -> [String]
     toEdgeRec _ []         = []
