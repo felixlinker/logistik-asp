@@ -22,21 +22,24 @@ data FactProgram = FactProgram
     , facts :: Map.Map Name [[Value]]
     }
 
+isVarChar :: Char -> Bool
+isVarChar = (||) <$> isAlphaNum <*> (== '_')
+
 prsConst :: ReadP Const
 prsConst = do
     string "#const"
     skipSpaces
-    name <- munch1 isAlpha
+    name <- munch1 isVarChar
     char '='
-    value <- munch1 isDigit
+    value <- munch1 isAlphaNum
     char '.'
     return (name, read value)
 
 prsFact :: ReadP Fact
 prsFact = do
-    name <- munch1 isAlpha
+    name <- munch1 isVarChar
     char '('
-    values <- sepBy1 (skipSpaces >> munch1 isAlpha)
+    values <- sepBy1 (skipSpaces >> munch1 isAlphaNum)
                      (skipSpaces >> char ',')
     string ")."
     return (name, map read values)
@@ -44,15 +47,17 @@ prsFact = do
 prsLine :: ReadP (Either Const Fact)
 prsLine = do
     skipSpaces
-    prsConstLeft +++ prsFactRight
+    prsFactRight <++ prsConstLeft
     where
-        prsConstLeft = prsConst >>= return . Left
-        prsFactRight = prsFact >>= return . Right
+        prsConstLeft = Left <$> prsConst
+        prsFactRight = Right <$> prsFact
 
-prsProgram :: ReadP FactProgram
+prsProgram :: ReadP [Either Const Fact]
 prsProgram = do
     lines <- many prsLine
-    return $ assembleProgram lines
+    skipSpaces
+    eof
+    return lines
 
 assembleProgram :: [Either Const Fact] -> FactProgram
 assembleProgram = recurse $ FactProgram Map.empty Map.empty
@@ -64,4 +69,4 @@ assembleProgram = recurse $ FactProgram Map.empty Map.empty
             recurse (FactProgram cs (Map.adjust (value:) name fs)) tail
 
 programParser :: ReadS FactProgram
-programParser = readP_to_S prsProgram
+programParser = readP_to_S (assembleProgram <$> prsProgram)
