@@ -10,8 +10,6 @@ import           Data.Map.Merge.Strict
 import qualified Data.Map.Strict               as Map
 import qualified Data.Set                      as Set
 
-class EdgeYielder a where
-    toEdge :: Int -> a -> String
 
 toGraph :: FactProgram -> [String]
 toGraph p =
@@ -46,11 +44,12 @@ data Step = Step { day :: Int
 
 data Drives = Drives { dstep :: Step
                      , to :: Int } deriving (Eq, Ord)
-instance EdgeYielder Drives where
-    toEdge start (Drives (Step d s) t) =
-        let startNode = show $ Place start d
-            endNode   = show $ Place t d
-        in  printf "%s -> %s [label=\"@%d\"];" startNode endNode s
+
+toEdge :: Int -> Drives -> String
+toEdge from (Drives (Step d s) t) =
+    let startNode = show $ Place from d
+        endNode   = show $ Place t d
+    in  printf "%s -> %s [label=\"@%d\",color=%d];" startNode endNode s
 
 fromList :: [Int] -> Drives
 fromList (to : step : day : _) = Drives (Step day step) to
