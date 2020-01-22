@@ -35,19 +35,6 @@ data Place = Place { pid :: Int
 instance Show Place where
     show (Place i d) = printf "n%d_%d" i d
 
-data Edge = Edge { start :: Place
-                 , end :: Place } deriving (Eq, Ord)
-instance Show Edge where
-    show (Edge f t) = show f ++ " -> " ++ show t ++ ";"
-fromCost :: [Int] -> Edge
-fromCost (f : t : _) = Edge (Place f 0) (Place t 0)
-
-roadGraph :: FactProgram -> Set.Set Edge
-roadGraph program = Set.map fromCost $ facts program Map.! "cost"
-
-setDays :: Int -> Set.Set Edge -> Set.Set Edge
-setDays d = Set.map $ \(Edge f t) -> Edge (f { pday = d }) (t { pday = d })
-
 data Step = Step { day :: Int
                  , num :: Int } deriving (Eq, Ord)
 
