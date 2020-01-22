@@ -21,12 +21,12 @@ toGraph p =
     in
         globals
             ++ ( Map.foldr (++) []
-               $ Map.mapWithKey (\k -> toEdgeRec 0) drives
+               $ Map.mapWithKey (\k -> toEdgeRec (Place (starts Map.! k) 1)) drives
                )
   where
-    toEdgeRec :: Int -> [Drives] -> [String]
+    toEdgeRec :: Place -> [Drives] -> [String]
     toEdgeRec _ []         = []
-    toEdgeRec s (d : tail) = toEdge s d : toEdgeRec (num $ dstep d) tail
+    toEdgeRec s (d : tail) = toEdge s d : toEdgeRec (endPlace d) tail
 
 data Place = Place { pid :: Int
                    , pday :: Int } deriving (Eq, Ord)
@@ -53,11 +53,13 @@ data Drives = Drives { dstep :: Step
                      , to :: Int
                      , truck :: Int } deriving (Eq, Ord)
 
-toEdge :: Int -> Drives -> String
+toEdge :: Place -> Drives -> String
 toEdge from (Drives (Step d s) t tr) =
-    let startNode = show $ Place from d
+    let startNode = show from
         endNode   = show $ Place t d
     in  printf "%s -> %s [label=\"@%d\",color=%d];" startNode endNode s tr
+endPlace :: Drives -> Place
+endPlace (Drives (Step d _) t _) = (Place t d)
 
 fromList :: [Int] -> Drives
 fromList (truck : to : step : day : _) = Drives (Step day step) to truck
