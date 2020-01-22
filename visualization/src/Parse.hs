@@ -1,5 +1,10 @@
 module Parse
-    ( programParser
+    ( Name
+    , Value
+    , Const
+    , Fact
+    , FactProgram (..)
+    , programParser
     ) where
 
 import Text.ParserCombinators.ReadP
