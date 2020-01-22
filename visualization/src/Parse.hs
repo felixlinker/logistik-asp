@@ -1,5 +1,5 @@
 module Parse
-    ( programmParser
+    ( programParser
     ) where
 
 import Text.ParserCombinators.ReadP
@@ -44,19 +44,19 @@ prsLine = do
         prsConstLeft = prsConst >>= return . Left
         prsFactRight = prsFact >>= return . Right
 
-prsProgramm :: ReadP FactProgram
-prsProgramm = do
+prsProgram :: ReadP FactProgram
+prsProgram = do
     lines <- many prsLine
-    return $ assembleProgramm lines
+    return $ assembleProgram lines
 
-assembleProgramm :: [Either Const Fact] -> FactProgram
-assembleProgramm = recurse $ FactProgram Map.empty Map.empty
+assembleProgram :: [Either Const Fact] -> FactProgram
+assembleProgram = recurse $ FactProgram Map.empty Map.empty
     where
-        recurse programm [] = programm
+        recurse program [] = program
         recurse (FactProgram cs fs) (Left (name, value):tail) =
             recurse (FactProgram (Map.insert name value cs) fs) tail
         recurse (FactProgram cs fs) (Right (name, value):tail) =
             recurse (FactProgram cs (Map.adjust (value:) name fs)) tail
 
-programmParser :: ReadS FactProgram
-programmParser = readP_to_S prsProgramm
+programParser :: ReadS FactProgram
+programParser = readP_to_S prsProgram
