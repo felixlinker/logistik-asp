@@ -27,7 +27,7 @@ toGraph p =
                 in  placesGraph fs ws
     in  ["digraph TruckSchedule {"]
             ++ globals
-            ++ concatMap dayPlacesGraph [1 .. days + 1]
+            ++ concatMap dayPlacesGraph [1 .. days]
             ++ Map.foldr
                    (++)
                    []
