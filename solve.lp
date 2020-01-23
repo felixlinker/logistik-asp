@@ -117,7 +117,7 @@ truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 %%% LOADING RULES %%%
 %   ***all of them aim at satisfying constraints as given in task
 % Before departing, truck loads. Only load what is offered.
-1 { load(T, G, Q, S, D) : capacity_opt(Q) } 1 :- truck_at(T, P, S, D), offers(P, G).
+1 { load(T, G, Q, S, D) : capacity_opt(Q) } 1 :- truck_at(T, P, S, D), offers(P, G), drive(T, P', S, D).
 % do not load too much
 :- truck_capacity < #sum { (Q+QL)*V : vol(G, V), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D) }, truck_at(T, P, S, D).
 %   ***take into consideration how different goods take up different amount of space per unit (own extension)
