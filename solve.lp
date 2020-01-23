@@ -23,6 +23,7 @@ capacity_opt(0..truck_capacity).
 % has been loaded into the truck in step S.
 
 % predicate truck_at(T, P, S, D).
+#show truck_at/4.
 % truck_at encodes the position P of the truck T after driving in step S-1, i.e.
 % at the beginning of step S at day D.
 
