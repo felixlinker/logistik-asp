@@ -10,6 +10,8 @@ module Parse
 import Text.ParserCombinators.ReadP
 import Data.Char
 import SetMap
+import Data.Maybe
+import Control.Monad
 import qualified Data.Map.Strict as Map
 import qualified Data.Set as Set
 
@@ -46,17 +48,40 @@ prsFact = do
     string ")."
     return (name, map read values)
 
-prsLine :: ReadP (Either Const Fact)
+skipCost :: ReadP (Maybe a)
+skipCost = do
+    string "COST"
+    skipSpaces
+    skipMany1 $ satisfy isDigit
+    return Nothing
+
+skipMeta :: ReadP (Maybe a)
+skipMeta = do
+    skipSpaces
+    skipAnswer <++ skipCost <++ skipOpt
+  where skipAnswer :: ReadP (Maybe a)
+        skipAnswer = string "ANSWER" >> return Nothing
+        skipOpt :: ReadP (Maybe a)
+        skipOpt = string "OPTIMUM" >> return Nothing
+
+skipComment :: ReadP (Maybe a)
+skipComment = do
+    skipSpaces
+    char '%'
+    skipMany $ satisfy isPrint
+    return Nothing
+
+prsLine :: ReadP (Maybe (Either Const Fact))
 prsLine = do
     skipSpaces
-    prsFactRight <++ prsConstLeft
+    skipComment <++ skipMeta <++ prsFactRight <++ prsConstLeft
     where
-        prsConstLeft = Left <$> prsConst
-        prsFactRight = Right <$> prsFact
+        prsConstLeft = Just . Left <$> prsConst
+        prsFactRight = Just . Right <$> prsFact
 
 prsProgram :: ReadP [Either Const Fact]
 prsProgram = do
-    lines <- many prsLine
+    lines <- catMaybes <$> many prsLine
     skipSpaces
     eof
     return lines
