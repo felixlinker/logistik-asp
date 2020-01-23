@@ -1,13 +1,13 @@
 %%% INPUT %%%
-% How many trucks are available? 
+% How many trucks are available?
 %    ***fixed number of equal trucks (given in task)
 #const trucks=6.
 truck(1..trucks).
-% What is the capacity of each truck? 
+% What is the capacity of each truck?
 %    ***reasonable condition to avoid unrealistic solutions (own extension)
 #const truck_capacity=5.
 capacity_opt(0..truck_capacity).
-% How many deliveries can a truck make at max per day? 
+% How many deliveries can a truck make at max per day?
 %    ***reasonable condition to avoid unrealistic solutions (own extension)
 #const max_steps=tu_per_day.
 
@@ -71,7 +71,7 @@ capacity_opt(0..truck_capacity).
 offers(F, G) :- factory(F), produces(F, G, Q), Q > 0.
 offers(W, G) :- warehouse(W), supply(W, G, Q), Q > 0.
 % Gernalize demand/consumes into needs
-%    ***likewise for weekly resource consumption and sold product quantity 
+%    ***likewise for weekly resource consumption and sold product quantity
 needs(F, G) :- factory(F), consumes(F, G, Q), Q > 0.
 needs(W, G) :- warehouse(W), demand(W, G, Q), Q > 0.
 
