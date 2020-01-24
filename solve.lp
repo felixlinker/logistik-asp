@@ -119,7 +119,7 @@ truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 % Before departing, truck loads. Only load what is offered.
 1 { load(T, G, Q, S, D) : capacity_opt(Q) } 1 :- truck_at(T, P, S, D), offers(P, G), drive(T, P', S, D).
 % do not load too much
-:- truck_capacity < #sum { (Q+QL)*V : vol(G, V), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D) }, truck_at(T, P, S, D).
+:- truck_capacity < #sum { Q+QL : truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D) }, truck_at(T, P, S, D).
 %   ***take into consideration how different goods take up different amount of space per unit (own extension)
 
 % do not load more than is available (each week):
