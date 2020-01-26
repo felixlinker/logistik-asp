@@ -77,7 +77,7 @@ toEdge :: Place -> Drives -> String
 toEdge from (Drives (Step d s) t tr) =
     let startNode = show from
         endNode   = show $ Place t d
-    in  printf "%s -> %s [label=\"@%d\",color=%d];" startNode endNode s tr
+    in  printf "%s -> %s [label=\"%d@%d\",color=%d];" startNode endNode tr s tr
 endPlace :: Drives -> Place
 endPlace (Drives (Step d _) t _) = (Place t d)
 
