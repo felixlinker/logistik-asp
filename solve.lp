@@ -100,7 +100,7 @@ truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 :- unload(T, G, Q, S, D), 0 < Q, demand(P, G, 0), warehouse(P), drive(T, P, S, D).
 :- unload(T, G, Q, S, D), 0 < Q, warehouse(P), drive(T, P, S, D), resource(G).
 :- unload(T, G, Q, S, D), 0 < Q, consumes(P, G, 0), factory(P), drive(T, P, S, D).
-:- unload(T, G, Q, S, D), 0 < Q, factory(P), drive(T, P, S, D), product(g).
+:- unload(T, G, Q, S, D), 0 < Q, factory(P), drive(T, P, S, D), product(G).
 % do not drop off more than is needed (in the course of one week):
 % drop off whatever products warehouses want
 :- Q != #sum{ Q',T,S,D: unload(T, G, Q', S, D), drive(T, P, S, D) }, demand(P, G, Q).%no need to multiply sum with days!!
