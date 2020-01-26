@@ -94,10 +94,12 @@ truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 % do not unload too much
 :- unload(T, G, QU, S, D), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D), QU > Q + QL.
 
-% do not drop off more than is needed (in the course of one week):
-:- unload(T, G, Q, S, D), demand(P, G, Q'), Q'<Q, warehouse(P), drive(T, P, S, D).
-:- unload(T, G, Q, S, D), consumes(P, G, Q'), Q'*days<Q, factory(P), drive(T, P, S, D).
 % do not drop what you should pick up:
+:- unload(T, G, Q, S, D), 0 < Q, demand(P, G, 0), warehouse(P), drive(T, P, S, D).
+:- unload(T, G, Q, S, D), 0 < Q, warehouse(P), drive(T, P, S, D), resource(G).
+:- unload(T, G, Q, S, D), 0 < Q, consumes(P, G, 0), factory(P), drive(T, P, S, D).
+:- unload(T, G, Q, S, D), 0 < Q, factory(P), drive(T, P, S, D), product(g).
+% do not drop off more than is needed (in the course of one week):
 % drop off whatever products warehouses want
 :- Q != #sum{ Q',T,S,D: unload(T, G, Q', S, D), drive(T, P, S, D) }, demand(P, G, Q).%no need to multiply sum with days!!
 % each day, do not drop off less than the factories needed so far
@@ -111,10 +113,12 @@ truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 :- truck_capacity < #sum { Q+QL,G : truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D) }, truck_at(T, P, S, D).
 %   ***take into consideration how different goods take up different amount of space per unit (own extension)
 
-% do not load more than is available (each week):
-:- load(T, G, Q, S, D), supply(P, G, Q'), Q'<Q, warehouse(P), truck_at(T, P, S, D).
-:- load(T, G, Q, S, D), produces(P, G, Q'), Q'*days<Q, factory(P), truck_at(T, P, S, D).
 % do not load what you should deliver:
+:- load(T, G, Q, S, D), 0 < Q, supply(P, G, 0), warehouse(P), truck_at(T, P, S, D).
+:- load(T, G, Q, S, D), 0 < Q, warehouse(P), truck_at(T, P, S, D), product(G).
+:- load(T, G, Q, S, D), 0 < Q, produces(P, G, 0), factory(P), truck_at(T, P, S, D).
+:- load(T, G, Q, S, D), 0 < Q, factory(P), truck_at(T, P, S, D), resource(G).
+% do not load more than is available (each week):
 % pick up whatever resources warehouses offer
 :- Q != #sum{ Q',T,S,D: load(T, G, Q', S, D), truck_at(T, P, S, D) }, supply(P, G, Q).%no need to multiply sum with days!!
 % each day, do not pick up more than the factories have made so far
