@@ -66,14 +66,16 @@ capacity_opt(0..truck_capacity).
 % you have to look at the place in drive.
 
 %%% INITIAL STATE %%%
-% Trucks are empty at the beginning of each day.
-truck_loaded(T, G, 0, 1, D) :- truck(T), good(G), day(D).
+% Trucks are empty at the beginning of the week.
+truck_loaded(T, G, 0, 1, 1) :- truck(T), good(G).
 % Trucks are parked at some warehouse at the beginning of the week...
 1 { truck_at(T, W, 1, 1) : warehouse(W) } 1 :- truck(T).
 % ... and must end at the same warehouse where they started.
 :- truck_at(T, P_start, 1, 1), truck_at(T, P_end, S, days), not drive(T, _, S, days), P_start != P_end.
 % Trucks start their day where they ended the last one.
 truck_at(T, P, 1, D + 1) :- truck_at(T, P, S, D), not drive(T, _, S, D), D < days.
+% Trucks keep their load over night
+truck_loaded(T, G, Q, 1, D + 1) :- truck_loaded(T, G, Q, S, D), not drive(T, _, S, D), D < days.
 
 %%% DRIVING RULES %%%
 % Drive but don't drive around in circles
