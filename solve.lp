@@ -123,7 +123,7 @@ unload(T, G, 0, S, D) :- drive(T, P, S, D), not needs(P, G), good(G).
 % If some place does not offer a good, it is not loaded.
 load(T, G, 0, S, D) :- truck_at(T, P, S, D), not offers(P, G), good(G), drive(T, P', S, D).
 % do not load too much
-:- truck_capacity < #sum { Q+QL : truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D) }, truck_at(T, P, S, D).
+:- truck_capacity < #sum { Q+QL,G : truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D) }, truck_at(T, P, S, D).
 %   ***take into consideration how different goods take up different amount of space per unit (own extension)
 
 % do not load more than is available (each week):
