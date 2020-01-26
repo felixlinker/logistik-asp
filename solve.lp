@@ -102,6 +102,8 @@ truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 %   ***all of them aim at satisfying constraints as given in task
 % When arriving, truck unloads. Only load what is needed.
 1 { unload(T, G, Q, S, D) : capacity_opt(Q) } 1 :- drive(T, P, S, D), needs(P, G).
+% If a place does not need a good, don't unload it.
+unload(T, G, 0, S, D) :- drive(T, P, S, D), not needs(P, G), good(G).
 % do not unload too much
 :- unload(T, G, QU, S, D), truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D), QU > Q + QL.
 
@@ -118,6 +120,8 @@ truck_at(T, P, S+1, D) :- truck_at(T, P', S, D), drive(T, P, S, D).
 %   ***all of them aim at satisfying constraints as given in task
 % Before departing, truck loads. Only load what is offered.
 1 { load(T, G, Q, S, D) : capacity_opt(Q) } 1 :- truck_at(T, P, S, D), offers(P, G), drive(T, P', S, D).
+% If some place does not offer a good, it is not loaded.
+load(T, G, 0, S, D) :- truck_at(T, P, S, D), not offers(P, G), good(G), drive(T, P', S, D).
 % do not load too much
 :- truck_capacity < #sum { Q+QL : truck_loaded(T, G, Q, S, D), load(T, G, QL, S, D) }, truck_at(T, P, S, D).
 %   ***take into consideration how different goods take up different amount of space per unit (own extension)
