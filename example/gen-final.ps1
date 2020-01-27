@@ -8,5 +8,5 @@
                      "-c product_num=2", `
                      "--rand-freq=0.05" `
             -Files  .\instance-generation\instance-generator.lp, `
-                    .\instance-generation\final-instance-constraints.lp `
-            -OutFile .\final-instance.lp
+                    .\example\final-instance-constraints.lp `
+            -OutFile .\example\final-instance.lp
