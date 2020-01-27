@@ -1,5 +1,5 @@
-#const consumes_sum=20.
-#const produces_sum=20.
+#const consumes_sum=12.
+#const produces_sum=12.
 
 % Have an "interesting" amount of consumption and production
 :- consumes_sum != #sum { Q,F,R : consumes(F, R, Q) }.
